@@ -56,7 +56,6 @@ public partial class SignInWindow : ObservableWindow
     public SignInWindow()
     {
         InitializeComponent();
-        MessageBox.Show("Welcome", "Welcome", MessageBoxButton.OK, MessageBoxImage.Information);
     }
     
     public SignInWindow(NetworkService networkService)
