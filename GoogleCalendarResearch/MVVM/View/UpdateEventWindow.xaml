@@ -1,0 +1,139 @@
+﻿<Core:ObservableWindow
+    x:Class="GoogleCalendarResearch.MVVM.View.UpdateEventWindow"
+    xmlns:Core="clr-namespace:GoogleCalendarResearch.Core"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:GoogleCalendarResearch.MVVM.View"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    mc:Ignorable="d"
+    d:Height="600"
+    Height="400"
+    Width="300"
+    FontSize="18"
+    ResizeMode="CanMinimize"
+    DataContext="{Binding RelativeSource={RelativeSource self}}">
+
+    <!-- Window resources -->
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="pack://application:,,,/GoogleCalendarResearch;component/Resource Dictionaries/DefaultLightTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <!-- Window Content -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition
+                Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Data Entry Section -->
+        <Border
+            Padding="10">
+            <StackPanel>
+                <!-- Title -->
+                <TextBlock
+                    Text="Update Event"
+                    FontSize="28"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Margin="0,0,0,20" />
+
+                <!-- Summary / Name of the Event -->
+                <StackPanel>
+                    <TextBlock
+                        Text="Summary:"
+                        Margin="0,0,0,5" />
+                    <TextBox
+                        Style="{StaticResource DefaultTextBox}"
+                        Text="{Binding summary, UpdateSourceTrigger=PropertyChanged}"
+                        FontSize="22"
+                        Margin="0,0,0,5" />
+                </StackPanel>
+
+                <!-- Start Date and Time -->
+                <StackPanel>
+                    <Label
+                        Content="Start"
+                        Margin="0,0,0,5" />
+                    <xctk:DateTimePicker
+                        Text="{Binding startDateTimeOffset}" />
+                </StackPanel>
+
+                <!-- End Date and Time -->
+                <StackPanel>
+                    <Label
+                        Content="End"
+                        Margin="0,0,0,5" />
+                    <xctk:DateTimePicker
+                        Text="{Binding endDateTimeOffset}" />
+                </StackPanel>
+
+            </StackPanel>
+        </Border>
+
+        <!-- Create button -->
+        <Button
+            Style="{StaticResource DefaultButton}"
+            Grid.Column="1"
+            Grid.Row="1"
+            Content="Update"
+            Margin="10"
+            Height="50"
+            Click="ButtonUpdateEvent_Click" />
+
+        <!-- Decoration -->
+        <Grid
+            Margin="0,0,-600,0"
+            Panel.ZIndex="-1">
+            <Grid.RenderTransform>
+                <RotateTransform
+                    Angle="-40"
+                    CenterY="500"
+                    CenterX="450" />
+            </Grid.RenderTransform>
+
+            <StackPanel
+                Orientation="Horizontal">
+                <StackPanel>
+                    <Border
+                        Height="25"
+                        Background="Transparent"
+                        Margin="0,5,0,0" />
+
+                    <Border
+                        Height="25"
+                        Background="Transparent"
+                        Margin="0,5,0,0" />
+
+                    <Border
+                        Height="25"
+                        Background="Transparent"
+                        Margin="0,5,0,0" />
+
+                    <Border
+                        Width="350"
+                        Height="25"
+                        Background="#245485"
+                        CornerRadius="10" />
+                </StackPanel>
+
+                <StackPanel
+                    Margin="200,0,0,0">
+                    <Border
+                        Width="350"
+                        Height="25"
+                        Background="#84D4FF"
+                        Margin="0,5,0,0"
+                        CornerRadius="10" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Core:ObservableWindow>
