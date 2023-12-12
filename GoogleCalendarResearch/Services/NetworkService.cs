@@ -15,9 +15,6 @@ public class NetworkService
     CalendarService service;
     UserCredential credential;
 
-    //const string ApiKey = "AIzaSyA_wie79k__bvhErT6ecaz4BWH2WrHUUbU";
-    //const string holidayCalendarIdSA = "en.sa#holiday@group.v.calendar.google.com";
-
     private const string clientd = "705457219541-3sn73lrf75ockoqg8rp5av0mq09d0q7b.apps.googleusercontent.com";
     private const string clientSecret = "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";
 

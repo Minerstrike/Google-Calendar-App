@@ -37,7 +37,6 @@ public partial class SignInWindow : ObservableWindow
     }
 
     private bool _activeNetworkService;
-
     public bool activeNetworkService
     {
         get => _activeNetworkService;

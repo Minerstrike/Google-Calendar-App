@@ -18,7 +18,7 @@ public partial class MainWindow : ObservableWindow
 
     NetworkService networkService;
 
-    private List<Event> _events;
+    private List<Event> _events = [];
     public List<Event> events
     {
         get => _events;
@@ -29,7 +29,7 @@ public partial class MainWindow : ObservableWindow
         }
     }
 
-    private Event _selectedEvent;
+    private Event _selectedEvent = new Event();
     public Event selectedEvent
     {
         get => _selectedEvent;
