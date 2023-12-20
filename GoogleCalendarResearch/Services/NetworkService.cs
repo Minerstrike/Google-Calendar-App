@@ -56,7 +56,6 @@ public class NetworkService
         }
         catch (Exception)
         {
-
             MessageBox.Show("Possible mismatch of accounts", "Attempt failed", MessageBoxButton.OK, MessageBoxImage.Error);
             return [];
         }
