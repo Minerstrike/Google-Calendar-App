@@ -2,8 +2,8 @@
 using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
-using Google.Apis.Util.Store;
-using System.Security.Permissions;
+using GoogleCalendarResearch.Authentication;
+using System.Threading;
 using System.Windows;
 
 namespace GoogleCalendarResearch.Services;
@@ -15,11 +15,11 @@ public class NetworkService
     CalendarService service;
     UserCredential credential;
 
-    private const string clientd = "705457219541-3sn73lrf75ockoqg8rp5av0mq09d0q7b.apps.googleusercontent.com";
-    private const string clientSecret = "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";
+    private const string clientd        = AuthConstants.CLIENT_ID;
+    private const string clientSecret   = AuthConstants.CLIENT_SECRET;
 
-    string calendarId = "micah@farsoft.co.za";
-    string username = "micah@farsoft.co.za";
+    string calendarId   = string.Empty;
+    string username     = string.Empty;
 
     public string[] scopes =
     {
@@ -30,19 +30,37 @@ public class NetworkService
 
     #region Constructors
 
-    public NetworkService(string calendarId, string username)
+    public NetworkService()
     {
-        this.calendarId = calendarId;
-        this.username = username;
-        
-        service = new CalendarService();
 
-        SignIn(scopes, username);
     }
 
     #endregion
 
     #region Methods
+
+    public async Task<NetworkService> BuildAsync(string calendarId, string username)
+    {
+        this.calendarId = calendarId;
+        this.username = username;
+
+        service = new CalendarService();
+
+        await SignInAsync(scopes, username);
+
+        return this;
+    }
+
+    public async Task<NetworkService> BuildAsync(string calendarId, string username, CancellationToken cancellationToken)
+    {
+        this.calendarId = calendarId;
+        this.username = username;
+
+        service = new CalendarService();
+
+        await SignInAsync(scopes, username, cancellationToken);
+        return this;
+    }
 
     public async Task<List<Event>> GetCalendarEventsAsync()
     {
@@ -52,13 +70,42 @@ public class NetworkService
         {
             var response = await request.ExecuteAsync();
 
-            return response.Items.ToList();
-        }
-        catch (Exception)
-        {
-            MessageBox.Show("Possible mismatch of accounts", "Attempt failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            if (response is not null)
+            {
+                return response.Items.ToList();
+            }
+
             return [];
         }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Attempt failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            return [];
+        }
+    }
+
+    public async Task<List<Event>> GetCalendarEventsAsync(CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested is false)
+        {
+            var request = service.Events.List(calendarId);
+
+            try
+            {
+                var response = await request.ExecuteAsync(cancellationToken);
+
+                return response.Items.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    message         : ex.Message,
+                    innerException  : ex.InnerException
+                );
+            } 
+        }
+
+        return [];
     }
 
     public void PostEvent(Event targetEvent)
@@ -91,9 +138,51 @@ public class NetworkService
                 scopes,
                 username,
                 CancellationToken.None
-                //new FileDataStore("GOOGLE CALENDAR API ACCESS")
-                //new FileDataStore("Daimto.GoogleCalendar.Auth.Store")
             ).Result;
+
+        service = new CalendarService(new BaseClientService.Initializer()
+        {
+            HttpClientInitializer = credential,
+            ApplicationName = "Google calendar research app"
+        });
+    }
+
+    public async Task SignInAsync(string[] scopes, string username)
+    {
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+        credential = await GoogleWebAuthorizationBroker.AuthorizeAsync
+            (
+                new ClientSecrets
+                {
+                    ClientId = clientd,
+                    ClientSecret = clientSecret
+                },
+                scopes,
+                username,
+                cancellationTokenSource.Token
+            );
+
+        service = new CalendarService(new BaseClientService.Initializer()
+        {
+            HttpClientInitializer = credential,
+            ApplicationName = "Google calendar research app"
+        });
+    }
+
+    public async Task SignInAsync(string[] scopes, string username, CancellationToken cancellationToken)
+    {
+        credential = await GoogleWebAuthorizationBroker.AuthorizeAsync
+            (
+                new ClientSecrets
+                {
+                    ClientId = clientd,
+                    ClientSecret = clientSecret
+                },
+                scopes,
+                username,
+                cancellationToken
+            );
 
         service = new CalendarService(new BaseClientService.Initializer()
         {

@@ -69,15 +69,15 @@ public partial class SignInWindow : ObservableWindow
 
     #region Methods
 
-    public void InitialiseNetworkService()
+    public async Task InitialiseNetworkService()
     {
         if (calendarId == string.Empty)
         {
-            networkService = new NetworkService(username, username);
+            networkService = await new NetworkService().BuildAsync(username, username);
         }
         else
         {
-            networkService = new NetworkService(calendarId, username);
+            networkService = await new NetworkService().BuildAsync(username, username);
         }
     }
 
@@ -85,12 +85,18 @@ public partial class SignInWindow : ObservableWindow
 
     #region Button Actions
 
-    private void ButtonSignIn_Click(object sender, RoutedEventArgs e)
+    private async void ButtonSignIn_Click(object sender, RoutedEventArgs e)
     {
-        InitialiseNetworkService();
-        
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            MessageBox.Show("Please enter a username.", "Missing username.", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        await InitialiseNetworkService();
+
         new MainWindow(networkService).Show();
-        this.Close();
+        Close();
     }
 
     private void ButtonSignOut_Click(object sender, RoutedEventArgs e)
@@ -105,6 +111,18 @@ public partial class SignInWindow : ObservableWindow
         {
 
             MessageBox.Show("Failed to sign out", "Failure", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    #endregion
+
+    #region Window events
+    
+    private void ObservableWindow_Closed(object sender, EventArgs e)
+    {
+        if (networkService is not null)
+        {
+            networkService.SignOut(); 
         }
     }
 

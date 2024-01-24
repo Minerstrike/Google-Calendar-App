@@ -2,7 +2,6 @@
 using GoogleCalendarResearch.Core;
 using GoogleCalendarResearch.MVVM.View;
 using GoogleCalendarResearch.Services;
-using MahApps.Metro.Controls;
 using System.Windows;
 using System.Windows.Input;
 
@@ -22,9 +21,9 @@ public partial class MainWindow : ObservableWindow
     public List<Event> events
     {
         get => _events;
-        set 
-        { 
-            _events = value; 
+        set
+        {
+            _events = value;
             OnPropertyChanged();
         }
     }
@@ -33,8 +32,8 @@ public partial class MainWindow : ObservableWindow
     public Event selectedEvent
     {
         get => _selectedEvent;
-        set 
-        { 
+        set
+        {
             _selectedEvent = value;
             OnPropertyChanged();
         }
@@ -57,7 +56,20 @@ public partial class MainWindow : ObservableWindow
 
     public async Task<List<Event>> GetEventsAsync()
     {
-        return await networkService.GetCalendarEventsAsync();
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+        try
+        {
+            return await networkService.GetCalendarEventsAsync(cancellationTokenSource.Token);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Attempt failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            cancellationTokenSource.Cancel();
+            Application.Current.Shutdown();
+        }
+
+        return [];
     }
 
     public void DeleteEvent(Event targetEvent)
@@ -92,7 +104,7 @@ public partial class MainWindow : ObservableWindow
     private void ButtonSignIn_Click(object sender, RoutedEventArgs e)
     {
         new SignInWindow(networkService).Show();
-        this.Close();
+        Close();
     }
 
     #endregion
@@ -133,10 +145,10 @@ public partial class MainWindow : ObservableWindow
         else
         {
             MessageBox.Show(
-                    messageBoxText  : "Please select an Event",
-                    caption         : "Missing Event",
-                    button          : MessageBoxButton.OK,
-                    icon            : MessageBoxImage.Exclamation);
+                    messageBoxText: "Please select an Event",
+                    caption: "Missing Event",
+                    button: MessageBoxButton.OK,
+                    icon: MessageBoxImage.Exclamation);
         }
     }
 
@@ -170,9 +182,9 @@ public partial class MainWindow : ObservableWindow
     {
         if (e.LeftButton == MouseButtonState.Pressed)
         {
-            this.DragMove();
+            DragMove();
         }
-    } 
+    }
 
     #endregion
 }
