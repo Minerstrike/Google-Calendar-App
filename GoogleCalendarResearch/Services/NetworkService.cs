@@ -120,74 +120,52 @@ public class NetworkService
         request.Execute();
     }
 
-    public void SignIn(string[] scopes, string username)
+    public async Task SignInAsync(string[] scopes, string username, CancellationToken? cancellationToken = null)
     {
-        credential = GoogleWebAuthorizationBroker.AuthorizeAsync
-            (
-                new ClientSecrets
-                {
-                    ClientId = clientd,
-                    ClientSecret = clientSecret
-                },
-                scopes,
-                username,
-                CancellationToken.None
-            ).Result;
+        if (cancellationToken is not null)
+        {
+            credential = await GoogleWebAuthorizationBroker.AuthorizeAsync
+                (
+                    new ClientSecrets
+                    {
+                        ClientId = clientd,
+                        ClientSecret = clientSecret
+                    },
+                    scopes,
+                    username,
+                    cancellationToken.Value
+                ); 
+        }
+        else
+        {
+            credential = await GoogleWebAuthorizationBroker.AuthorizeAsync
+                (
+                    new ClientSecrets
+                    {
+                        ClientId = clientd,
+                        ClientSecret = clientSecret
+                    },
+                    scopes,
+                    username,
+                    CancellationToken.None
+                );
+        }
 
         service = new CalendarService(new BaseClientService.Initializer()
         {
             HttpClientInitializer = credential,
-            ApplicationName = "Calendar research app"
+            ApplicationName = "Google calendar research app"
         });
-    }
-
-    public async Task SignInAsync(string[] scopes, string username)
-    {
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-
-        credential = await GoogleWebAuthorizationBroker.AuthorizeAsync
-            (
-                new ClientSecrets
-                {
-                    ClientId = clientd,
-                    ClientSecret = clientSecret
-                },
-                scopes,
-                username,
-                cancellationTokenSource.Token
-            );
-
-        service = new CalendarService(new BaseClientService.Initializer()
-        {
-            HttpClientInitializer = credential,
-            ApplicationName = "Calendar research app"
-        });
-    }
-
-    public async Task SignInAsync(string[] scopes, string username, CancellationToken cancellationToken)
-    {
-        credential = await GoogleWebAuthorizationBroker.AuthorizeAsync
-            (
-                new ClientSecrets
-                {
-                    ClientId = clientd,
-                    ClientSecret = clientSecret
-                },
-                scopes,
-                username,
-                cancellationToken
-            );
-
-        service = new CalendarService(new BaseClientService.Initializer()
-        {
-            HttpClientInitializer = credential,
-            ApplicationName = "Calendar research app"
-        });
-    }
+    }   
 
     public bool SignOut()
     {
         return credential.RevokeTokenAsync(CancellationToken.None).Result;
+    }
+
+    public async Task<bool> SignOutAsync(CancellationToken cancellationToken)
+    {
+        return await credential.RevokeTokenAsync(cancellationToken);
     }
 
     #endregion

@@ -99,17 +99,21 @@ public partial class SignInWindow : ObservableWindow
         Close();
     }
 
-    private void ButtonSignOut_Click(object sender, RoutedEventArgs e)
+    private async void ButtonSignOut_Click(object sender, RoutedEventArgs e)
     {
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
         try
         {
-            activeNetworkService = !networkService.SignOut();
+            if (await networkService.SignOutAsync(cancellationTokenSource.Token))
+            {
+                activeNetworkService = false;
+            }
 
             MessageBox.Show("Successfully signed out", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception)
         {
-
             MessageBox.Show("Failed to sign out", "Failure", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
