@@ -3,7 +3,6 @@ using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
 using GoogleCalendarResearch.Authentication;
-using System.Threading;
 using System.Windows;
 
 namespace GoogleCalendarResearch.Services;
@@ -70,12 +69,7 @@ public class NetworkService
         {
             var response = await request.ExecuteAsync();
 
-            if (response is not null)
-            {
-                return response.Items.ToList();
-            }
-
-            return [];
+            return response.Items.ToList();
         }
         catch (Exception ex)
         {
@@ -143,7 +137,7 @@ public class NetworkService
         service = new CalendarService(new BaseClientService.Initializer()
         {
             HttpClientInitializer = credential,
-            ApplicationName = "Google calendar research app"
+            ApplicationName = "Calendar research app"
         });
     }
 
@@ -166,7 +160,7 @@ public class NetworkService
         service = new CalendarService(new BaseClientService.Initializer()
         {
             HttpClientInitializer = credential,
-            ApplicationName = "Google calendar research app"
+            ApplicationName = "Calendar research app"
         });
     }
 
@@ -187,7 +181,7 @@ public class NetworkService
         service = new CalendarService(new BaseClientService.Initializer()
         {
             HttpClientInitializer = credential,
-            ApplicationName = "Google calendar research app"
+            ApplicationName = "Calendar research app"
         });
     }
 
